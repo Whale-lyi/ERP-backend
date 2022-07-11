@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.sheetdao.PaymentDao">
+
+<!--    PaymentSheetPO getLatestSheet();-->
+    <select id="getLatestSheet" resultType="paymentSheetPO">
+        select * from payment_sheet order by id desc limit 0,1
+    </select>
+<!--    Integer saveSheet(PaymentSheetPO toSave);-->
+    <insert id="saveSheet">
+        insert into payment_sheet values (#{id}, #{cid}, #{operator}, #{totalAmount}, #{state}, #{createTime});
+    </insert>
+<!--    Integer saveBatchSheetContent(List<PaymentSheetContentPO> collectionSheetContent);-->
+    <insert id="saveBatchSheetContent" useGeneratedKeys="true" keyProperty="id">
+        insert into payment_sheet_content values
+        <foreach collection="list"  item="item" index="index" separator=",">
+            (0, #{item.paymentSheetId}, #{item.accountId}, #{item.money}, #{item.remark})
+        </foreach>
+    </insert>
+<!--    List<PaymentSheetPO> findAllSheet();-->
+    <select id="findAllSheet" resultType="paymentSheetPO">
+        select * from payment_sheet;
+    </select>
+<!--    List<PaymentSheetPO> findAllByState(@Param("state") PaymentSheetState state);-->
+    <select id="findAllByState" resultType="paymentSheetPO">
+        select * from payment_sheet where state = #{state}
+    </select>
+
+    <!--List<PaymentSheetPO> findSheetByCondition(Condition condition);-->
+    <select id="findSheetByCondition" resultType="paymentSheetPO">
+        select * from payment_sheet
+        <where>
+            <if test="beginDateStr != null and beginDateStr != ''">
+                create_time >= #{beginDateStr}
+            </if>
+            <if test="endDateStr != null and endDateStr != ''">
+                and create_time &lt;= #{endDateStr}
+            </if>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="operator != null">
+                and operator = #{operator}
+            </if>
+        </where>
+    </select>
+
+<!--    PaymentSheetPO findSheetById(String id);-->
+    <select id="findSheetById" resultType="paymentSheetPO">
+        select * from payment_sheet where id = #{id};
+    </select>
+<!--    List<PaymentSheetContentPO> findContentBySheetId(String sheetId);-->
+    <select id="findContentBySheetId" resultType="paymentSheetContentPO">
+        select * from payment_sheet_content where payment_sheet_id = #{sheetId}
+    </select>
+<!--    Integer updateSheetState(String sheetId, PaymentSheetState state);-->
+    <update id="updateSheetState">
+        update payment_sheet set state = #{state} where id = #{sheetId}
+    </update>
+</mapper>

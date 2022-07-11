@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.saledao.SaleReturnsSheetDao">
+
+    <!--SaleReturnsSheetPO getLatest();-->
+    <select id="getLatest" resultMap="SaleReturnsSheetPO">
+        select * from sale_returns_sheet order by id desc limit 0,1;
+    </select>
+
+    <!--int save(SaleReturnsSheetPO toSave);-->
+    <insert id="save" parameterType="saleReturnsSheetPO">
+        insert into sale_returns_sheet (id, sale_sheet_id, salesman, operator, remark, total_amount, state, create_time)
+        VALUES (#{id}, #{saleSheetId}, #{salesman}, #{operator}, #{remark}, #{totalAmount}, #{state}, #{createTime})
+    </insert>
+
+    <!--void saveBatch(List<SaleReturnsSheetContentPO> SaleReturnsSheetContent);-->
+    <insert id="saveBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into sale_returns_sheet_content (sale_return_sheet_id, pid, quantity, raw_unit_price, new_unit_price, total_price, remark)
+        VALUES
+        <foreach collection="saleReturnsSheetContent" item="item" index="index" separator=",">
+            (#{item.saleReturnsSheetId}, #{item.pid}, #{item.quantity}, #{item.rawUnitPrice}, #{item.newUnitPrice}, #{item.totalPrice}, #{item.remark})
+        </foreach>
+    </insert>
+
+    <!--List<SaleReturnsSheetPO> findAll();-->
+    <select id="findAll" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet;
+    </select>
+
+    <!--List<SaleReturnsSheetPO> findAllByState(SaleReturnsSheetState state);-->
+    <select id="findAllByState" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet where state = #{state}
+    </select>
+
+    <!--List<SaleReturnsSheetContentPO> findContentBySaleReturnsSheetId(@Param("saleReturnsSheetId") String saleReturnsSheetId);-->
+    <select id="findContentBySaleReturnsSheetId" resultType="saleReturnsSheetContentPO">
+        select * from sale_returns_sheet_content where sale_return_sheet_id = #{saleReturnsSheetId}
+    </select>
+
+    <!--SaleReturnsSheetPO findOneById(@Param("saleReturnsSheetId") String saleReturnsSheetId);-->
+    <select id="findOneById" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet where id = #{saleReturnsSheetId}
+    </select>
+
+    <!--List<SaleReturnsSheetPO> findBySaleSheetId(@Param("id") String saleSheetId);-->
+    <select id="findBySaleSheetId" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet where sale_sheet_id = #{id}
+    </select>
+
+    <!--List<SaleReturnsSheetPO> findSheetByConditionPO(ConditionPO conditionPO);-->
+    <select id="findSheetByConditionPO" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet
+        <where>
+            <if test="beginDate != null and beginDate != ''">
+                create_time >= #{beginDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and create_time &lt;= #{endDate}
+            </if>
+            <if test="operator != null">
+                and salesman = #{operator}
+            </if>
+        </where>
+    </select>
+
+    <!--List<SaleReturnsSheetPO> findSheetByCondition(Condition condition);-->
+    <select id="findSheetByCondition" resultType="saleReturnsSheetPO">
+        select * from sale_returns_sheet
+        <where>
+            <if test="beginDateStr != null and beginDateStr != ''">
+                create_time >= #{beginDateStr}
+            </if>
+            <if test="endDateStr != null and endDateStr != ''">
+                and create_time &lt;= #{endDateStr}
+            </if>
+            <if test="operator != null">
+                and operator = #{operator}
+            </if>
+        </where>
+    </select>
+
+    <!--int updateState(@Param("saleReturnsSheetId") String saleReturnsSheetId, @Param("state") SaleReturnsSheetState state);-->
+    <update id="updateState">
+        update sale_returns_sheet
+        set state = #{state}
+        where id = #{saleReturnsSheetId}
+    </update>
+
+    <!--int updateStateV2(@Param("saleReturnsSheetId") String saleReturnsSheetId, @Param("prevState") SaleReturnsSheetState prevState, @Param("state") SaleReturnsSheetState state);-->
+    <update id="updateStateV2">
+        update sale_returns_sheet
+        set state = #{state}
+        where id = #{saleReturnsSheetId} and state = #{prevState}
+    </update>
+
+    <!--List<Integer> findBatchId(@Param("warehouseOutputSheetId") String warehouseOutputSheetId, @Param("pid") String pid);-->
+    <select id="findBatchId" resultType="integer">
+        select batch_id from warehouse_output_sheet_content
+        where pid = #{pid} and wo_id = #{warehouseOutputSheetId}
+    </select>
+
+    <!--List<WarehouseOutputSheetContentPO> findWarehouseOutSheetContent(@Param("warehouseOutputSheetId") String warehouseOutputSheetId, @Param("pid") String pid);-->
+    <select id="findWarehouseOutSheetContent" resultType="warehouseOutputSheetContentPO">
+        select * from warehouse_output_sheet_content
+        where pid = #{pid} and wo_id = #{warehouseOutputSheetId}
+    </select>
+
+    <resultMap id="SaleReturnsSheetPO" type="com.nju.edu.erp.model.po.salereturns.SaleReturnsSheetPO">
+        <id column="id" property="id"/>
+        <result column="sale_sheet_id" property="saleSheetId"/>
+        <result column="operator" property="operator"/>
+        <result column="salesman" property="salesman"/>
+        <result column="remark" property="remark"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+</mapper>

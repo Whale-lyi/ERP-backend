@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.accountdao.AccountDao">
+
+<!--    AccountPO createAccount(AccountPO accountPO);-->
+    <insert id="createAccount" parameterType="AccountPO" useGeneratedKeys="true" keyProperty="id">
+        insert into account values (0, #{name}, #{money})
+    </insert>
+
+<!--    void deleteAccountById(Integer id);-->
+    <delete id="deleteAccountById">
+        delete from account where id = #{id}
+    </delete>
+
+<!--    void updateAccount(AccountPO accountPO);-->
+    <update id="updateAccount" parameterType="AccountPO">
+        update account
+        <set>
+            <if test = "name != null">`name` = #{name}, </if>
+            <if test = "money != null">money = #{money}, </if>
+        </set>
+        where id = #{id}
+    </update>
+
+<!--    AccountPO searchAccountById(Integer id);-->
+    <select id="searchAccountById" resultType="accountPO">
+        select * from account where id = #{id}
+    </select>
+
+<!--    List<AccountPO> findAccountByKeyword(String keyword);-->
+    <select id="findAccountByKeyword" resultType="accountPO">
+        select * from account where name like '%${keyword}%'
+    </select>
+
+</mapper>

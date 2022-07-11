@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.warehousedao.WarehouseGiftSheetDao">
+
+<!--    WarehouseGiftSheetPO getLatestSheet();-->
+    <select id="getLatestSheet" resultType="warehouseGiftSheetPO">
+        select * from warehouse_gift_sheet order by id desc limit 0,1;
+    </select>
+
+<!--    Integer saveSheet(WarehouseGiftSheetPO toSave);-->
+    <insert id="saveSheet">
+        insert into warehouse_gift_sheet values
+        (#{id}, #{saleSheetId}, #{state}, #{createTime})
+    </insert>
+
+<!--    Integer saveBatchSheetContent(List<WarehouseGiftSheetContentPO> warehouseGiftSheetContent);-->
+    <insert id="saveBatchSheetContent" useGeneratedKeys="true" keyProperty="id">
+        insert into warehouse_gift_sheet_content values
+        <foreach collection="list" item="item" separator=",">
+            (0, #{item.warehouseGiftSheetId}, #{item.pid}, #{item.quantity})
+        </foreach>
+    </insert>
+
+<!--    List<WarehouseGiftSheetPO> findAllSheet();-->
+    <select id="findAllSheet" resultType="warehouseGiftSheetPO">
+        select * from warehouse_gift_sheet;
+    </select>
+
+<!--    List<WarehouseGiftSheetPO> findAllByState(WarehouseGiftSheetState state);-->
+    <select id="findAllByState" resultType="warehouseGiftSheetPO">
+        select * from warehouse_gift_sheet where state = #{state};
+    </select>
+
+<!--    WarehouseGiftSheetPO findSheetById(String id);-->
+    <select id="findSheetById" resultType="warehouseGiftSheetPO">
+        select * from warehouse_gift_sheet where id = #{id};
+    </select>
+
+<!--    List<WarehouseGiftSheetContentPO> findContentBySheetId(String sheetId);-->
+    <select id="findContentBySheetId" resultType="warehouseGiftSheetContentPO">
+        select * from warehouse_gift_sheet_content where warehouse_gift_sheet_id = #{sheetId}
+    </select>
+
+<!--    Integer updateSheetState(String sheetId, WarehouseGiftSheetState state);-->
+    <update id="updateSheetState">
+        update warehouse_gift_sheet set state = #{state}
+        where id = #{sheetId}
+    </update>
+</mapper>

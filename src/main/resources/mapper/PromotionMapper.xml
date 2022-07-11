@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.promotiondao.PromotionDao">
+    <!--PromotionPO getPromotionByLevel(Integer level);-->
+    <select id="getPromotionByLevel" resultType="promotionPO">
+        select * from promotion where level = #{level}
+    </select>
+
+    <!--void updatePromotion(PromotionPO promotionPO);-->
+    <update id="updatePromotion">
+        update promotion set discount = #{discount}, voucher = #{voucher} where level = #{level}
+    </update>
+
+    <!--List<GiftPO> getGiftByLevel(Integer level)-->
+    <select id="getGiftByLevel" resultType="giftPO">
+        select * from gift where level = #{level}
+    </select>
+
+    <!--Integer insertGift(List<GiftPO> giftPOList);-->
+    <insert id="insertGift">
+        insert into gift values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.level},#{item.pid},#{item.quantity})
+        </foreach>
+    </insert>
+
+    <!--Integer deleteGiftsByLevel(Integer level);-->
+    <delete id="deleteGiftsByLevel">
+        delete from gift where level = #{level}
+    </delete>
+
+    <!--Integer savePricePack(PricePackPO pricePackPO);-->
+    <insert id="savePricePack" useGeneratedKeys="true" keyProperty="id">
+        insert into price_pack values (0, #{amount})
+    </insert>
+
+    <!--Integer saveBatchPricePackContent(List<PricePackContentPO> pricePackContent);-->
+    <insert id="saveBatchPricePackContent" useGeneratedKeys="true" keyProperty="id">
+        insert into price_pack_content values
+        <foreach collection="list" item="item" separator=",">
+            (0, #{item.pricePackId}, #{item.pid}, #{item.quantity})
+        </foreach>
+    </insert>
+
+    <!--List<PricePackPO> getAllPricePack();-->
+    <select id="getAllPricePack" resultType="pricePackPO">
+        select * from price_pack
+    </select>
+
+    <!--PricePackPO getPricePackById(Integer id);-->
+    <select id="getPricePackById" resultType="pricePackPO">
+        select * from price_pack where id = #{id}
+    </select>
+
+    <!--List<PricePackContentPO> getContentByPricePackId(Integer id);-->
+    <select id="getContentByPricePackId" resultType="pricePackContentPO">
+        select * from price_pack_content where price_pack_id = #{id}
+    </select>
+
+    <!--Integer updatePricePack(PricePackPO pricePackPO);-->
+    <update id="updatePricePack">
+        update price_pack set amount = #{amount} where id = #{id}
+    </update>
+
+    <!--Integer deletePricePackById(Integer id);-->
+    <delete id="deletePricePackById">
+        delete from price_pack where id = #{id}
+    </delete>
+
+    <!--Integer deleteContentByPricePackId(Integer id);-->
+    <delete id="deleteContentByPricePackId">
+        delete from price_pack_content where price_pack_id = #{id}
+    </delete>
+
+    <!--Integer saveAmountPromotion(AmountPromotionPO amountPromotionPO);-->
+    <insert id="saveAmountPromotion" useGeneratedKeys="true" keyProperty="id">
+        insert into amount_promotion values (0, #{price}, #{voucher})
+    </insert>
+
+    <!--Integer saveBatchAmountPromotionContent(List<AmountPromotionContentPO> amountPromotionContent);-->
+    <insert id="saveBatchAmountPromotionContent" useGeneratedKeys="true" keyProperty="id">
+        insert into amount_promotion_content values
+        <foreach collection="list" item="item" separator=",">
+            (0, #{item.amountPromotionId}, #{item.pid}, #{item.quantity})
+        </foreach>
+    </insert>
+
+    <!--List<AmountPromotionPO> getAllAmountPromotion();-->
+    <select id="getAllAmountPromotion" resultType="amountPromotionPO">
+        select * from amount_promotion
+    </select>
+
+    <!--AmountPromotionPO getAmountPromotionByPrice(BigDecimal price);-->
+    <select id="getAmountPromotionByPrice" resultType="amountPromotionPO">
+        select * from amount_promotion where price &lt;= #{price} order by price desc limit 0,1
+    </select>
+
+    <!--List<AmountPromotionContentPO> getContentByAmountPromotionId(Integer id);-->
+    <select id="getContentByAmountPromotionId" resultType="amountPromotionContentPO">
+        select * from amount_promotion_content where amount_promotion_id = #{id}
+    </select>
+
+    <!--Integer updateAmountPromotion(AmountPromotionPO pricePackPO);-->
+    <update id="updateAmountPromotion">
+        update amount_promotion set price = #{price}, voucher = #{voucher} where id = #{id}
+    </update>
+
+    <!--Integer deleteAmountPromotionById(Integer id);-->
+    <delete id="deleteAmountPromotionById">
+        delete from amount_promotion where id = #{id}
+    </delete>
+
+    <!--Integer deleteContentByAmountPromotionId(Integer id);-->
+    <delete id="deleteContentByAmountPromotionId">
+        delete from amount_promotion_content where amount_promotion_id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.sheetdao.CollectionDao">
+
+    <!--CollectionSheetPO getLatestSheet();-->
+    <select id="getLatestSheet" resultType="collectionSheetPO">
+        select * from collection_sheet order by id desc limit 0,1
+    </select>
+    <!--int saveSheet(CollectionSheetPO toSave);-->
+    <insert id="saveSheet">
+        insert into collection_sheet values (#{id}, #{cid}, #{operator}, #{totalAmount}, #{state}, #{createTime});
+    </insert>
+    <!--int saveBatchSheetContent(List<CollectionSheetContentPO> collectionSheetContent);-->
+    <insert id="saveBatchSheetContent" useGeneratedKeys="true" keyProperty="id">
+        insert into collection_sheet_content values
+        <foreach collection="list"  item="item" index="index" separator=",">
+            (0, #{item.collectionSheetId}, #{item.accountId}, #{item.money}, #{item.remark})
+        </foreach>
+    </insert>
+    <!--List<CollectionSheetPO> findAllSheet();-->
+    <select id="findAllSheet" resultType="collectionSheetPO">
+        select * from collection_sheet;
+    </select>
+    <!--List<CollectionSheetPO> findAllByState(@Param("state")CollectionSheetState state);-->
+    <select id="findAllByState" resultType="collectionSheetPO">
+        select * from collection_sheet where state = #{state}
+    </select>
+
+    <!--List<CollectionSheetPO> findSheetByCondition(Condition condition);-->
+    <select id="findSheetByCondition" resultType="collectionSheetPO">
+        select * from collection_sheet
+        <where>
+            <if test="beginDateStr != null and beginDateStr != ''">
+                create_time >= #{beginDateStr}
+            </if>
+            <if test="endDateStr != null and endDateStr != ''">
+                and create_time &lt;= #{endDateStr}
+            </if>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="operator != null">
+                and operator = #{operator}
+            </if>
+        </where>
+    </select>
+
+    <!--CollectionSheetPO findSheetById(String id);-->
+    <select id="findSheetById" resultType="collectionSheetPO">
+        select * from collection_sheet where id = #{id};
+    </select>
+    <!--List<CollectionSheetContentPO> findContentBySheetId(String sheetId);-->
+    <select id="findContentBySheetId" resultType="collectionSheetContentPO">
+        select * from collection_sheet_content where collection_sheet_id = #{sheetId}
+    </select>
+    <!--int updateSheetState(String sheetId, CollectionSheetState state);-->
+    <update id="updateSheetState">
+        update collection_sheet set state = #{state} where id = #{sheetId}
+    </update>
+</mapper>

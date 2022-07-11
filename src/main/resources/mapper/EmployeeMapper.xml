@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.employeedao.EmployeeDao">
+
+    <!--Integer insertEmployee(EmployeePO employeePO);-->
+    <insert id="insertEmployee" useGeneratedKeys="true" keyProperty="id">
+        insert into employee (id, name, sex, birth, phone, role, salary)
+        values (0, #{name}, #{sex}, #{birth}, #{phone}, #{role}, #{salary});
+    </insert>
+
+    <!--EmployeePO findEmployeeByName(String name);-->
+    <select id="findEmployeeByName" resultType="employeePO">
+        select * from employee where name = #{name}
+    </select>
+
+    <!--EmployeePO findAll();-->
+    <select id="findAll" resultType="employeePO">
+        select * from employee
+    </select>
+
+    <!--void insertCheckIn(ClockInPO clockInPO);-->
+    <insert id="insertCheckIn" useGeneratedKeys="true" keyProperty="id">
+        insert into clock_in values (0, #{name}, #{time})
+    </insert>
+
+    <!--List<ClockInPO> findClockInByName(String name);-->
+    <select id="findClockInByName" resultType="clockInPO">
+        select * from clock_in where name = #{name}
+    </select>
+
+    <!--List<ClockInCountPO> findAllCountRecord();-->
+    <select id="findAllCountRecord" resultType="clockInCountPO">
+        select name, count(time) count from clock_in group by name;
+    </select>
+
+    <!--ClockInPO getLatestByName(String name);-->
+    <select id="getLatestByName" resultType="clockInPO">
+        select * from clock_in where name = #{name} order by time desc limit 0,1 ;
+    </select>
+</mapper>

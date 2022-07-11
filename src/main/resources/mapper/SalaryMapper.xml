@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nju.edu.erp.dao.sheetdao.SalaryDao">
+
+    <!--SalarySheetPO getLatestSheet();-->
+    <select id="getLatestSheet" resultType="salarySheetPO">
+        select * from salary_sheet order by id desc limit 0,1
+    </select>
+
+    <!--Integer saveSheet(SalarySheetPO toSave);-->
+    <insert id="saveSheet">
+        insert into salary_sheet values
+        (#{id}, #{uid}, #{name}, #{accountId}, #{rawSalary}, #{selfTax}, #{houseTax}, #{insuranceTax}, #{finalSalary}, #{state}, #{createTime})
+    </insert>
+
+    <!--List<SalarySheetPO> findAllSheet();-->
+    <select id="findAllSheet" resultType="salarySheetPO">
+        select * from salary_sheet;
+    </select>
+
+    <!--List<SalarySheetPO> findAllSheetByState(SalarySheetState state);-->
+    <select id="findAllSheetByState" resultType="salarySheetPO">
+        select * from salary_sheet where state = #{state}
+    </select>
+
+    <!--List<SalarySheetPO> findSheetByCondition(Condition condition);-->
+    <select id="findSheetByCondition" resultType="salarySheetPO">
+        select * from salary_sheet
+        <where>
+            <if test="beginDateStr != null and beginDateStr != ''">
+                create_time >= #{beginDateStr}
+            </if>
+            <if test="endDateStr != null and endDateStr != ''">
+                and create_time &lt;= #{endDateStr}
+            </if>
+        </where>
+    </select>
+
+    <!--SalarySheetPO findSheetById(String id);-->
+    <select id="findSheetById" resultType="salarySheetPO">
+        select * from salary_sheet where id = #{id}
+    </select>
+
+    <!--Integer updateSheetState(String sheetId, SalarySheetState state);-->
+    <update id="updateSheetState">
+        update salary_sheet set state = #{state} where id = #{sheetId}
+    </update>
+
+    <!--void updateSalary(BasicSalaryPO basicSalaryPO);-->
+    <update id="updateSalary">
+        update salary
+        <set>
+            <if test="inventoryManagerSalary != null">inventory_manager_salary = #{inventoryManagerSalary}, </if>
+            <if test="saleStaffSalary != null">sale_staff_salary = #{saleStaffSalary}, </if>
+            <if test="financialStaffSalary != null">financial_staff_salary = #{financialStaffSalary}, </if>
+            <if test="saleManagerSalary != null">sale_manager_salary = #{saleManagerSalary}, </if>
+            <if test="hrSalary != null">hr_salary = #{hrSalary}, </if>
+            <if test="gmSalary != null">gm_salary = #{gmSalary}, </if>
+        </set>
+    </update>
+
+    <!--BasicSalaryPO getSalary();-->
+    <select id="getSalary" resultType="basicSalaryPO">
+        select * from salary;
+    </select>
+</mapper>
